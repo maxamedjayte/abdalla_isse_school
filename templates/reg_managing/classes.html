@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Abdullahi Isse | SCHOOL {% endblock %}
+{% block user1 %}<h5 class="item-title">{{user.first_name}}</h5><span>Admin</span> {% endblock %}
+{% block user2 %}<h6 class="item-title">{{user}}</h6>{% endblock %}
+{% block content %}
+<div class="modal fade" id="addingSubjectModel" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Ku Dar Maado Cusub</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="subjectRegForm">
+                <div class="modal-body">
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">Magaca Maadada</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="subject-name" class="form-control" placeholder="Magaca Maadada"
+                                required>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">Faahfaahin</label>
+                        <div class="col-sm-10">
+                            <textarea rows="5" cols="5" name="subject-info" class="form-control"
+                                placeholder="Faahfaahinta Maadadaan "></textarea>
+                        </div>
+                    </div>
+
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default waves-effect " data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary waves-effect waves-light ">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="dashboard-content-one">
+    <!-- Breadcubs Area Start Here -->
+    <div class="breadcrumbs-area">
+        <h3>Classes</h3>
+        <ul>
+            <li>
+                <a href="index.html">Home</a>
+            </li>
+            <li>Add New Class</li>
+        </ul>
+    </div>
+    <!-- Breadcubs Area End Here -->
+    <!-- Add Class Area Start Here -->
+    <div class="card height-auto">
+        <div class="card-body">
+            <div class="heading-layout1">
+                <div class="item-title">
+                    <h3>Diiwaangalinta Fasalada iyo Maadooyinka Fasalka</h3>
+                </div>
+               <div class="dropdown">
+                    <a class="dropdown-toggle" href="#" role="button" 
+                    data-toggle="dropdown" aria-expanded="false">...</a>
+
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a class="dropdown-item" href="#"><i class="fas fa-times text-orange-red"></i>Close</a>
+                        <a class="dropdown-item" href="#"><i class="fas fa-cogs text-dark-pastel-green"></i>Edit</a>
+                        <a class="dropdown-item" href="#"><i class="fas fa-redo-alt text-orange-peel"></i>Refresh</a>
+                    </div>
+                </div>
+            </div>
+            <form id="classRegForm" class="new-added-form">
+                <div class="row">
+                    <div class="col-xl-6 col-lg-6 col-12 form-group">
+                        <label>Magaca Fasalka</label>
+                        <input type="text" name="cls-name"  placeholder="Soo Magaca Fasalka" class="form-control">
+                    </div>
+                   
+                    <div class="col-xl-6 col-lg-6 col-12 form-group">
+                        <label>Raqamka Fasalka </label>
+                        <select  name="cls-raqamka"  required class="select2">
+                            <option value="">Dooro Raqamka Fasalka</option>
+                            <option>A</option>
+                            <option>B</option>
+                            <option>C</option>
+                            <option>D</option>
+                            <option>E</option>
+                            <option>F</option>
+                            <option>J</option>
+                            <option>H</option>
+                        </select>
+                    </div>
+                    <div class="col-xl-5 col-lg-6 col-12 form-group">
+                        <label>Maadooyinka Fasalkaan</label>
+                        <select id="clsSubjectsOptions" aria-placeholder="Maadoyinka Fasalkaan" name="cls-subjects" required multiple class="select2">
+                            <option value="">Maadooyinka Laga Dhigo Fasalkaan </option>
+                        </select>
+                    </div>
+                    <div class="col-xl-3 col-lg-6 col-12 form-group">
+                        <label></label><br>
+                        <input type="button" id="add-subject" class="btn-fill-lg btn-gradient-yellow btn-hover-bluedark" value="Ku Dar Maado" class="form-control">
+                    </div>
+                    <div class="col-xl-4 col-lg-6 col-12 form-group">
+                        <label>Sanad Dugsiyeedka *</label>
+                        <select id="academicYearOption" name="cls-academic-year" required class="select2">
+                         
+                        </select>
+                    </div>
+                   
+                    <div class="col-md-6 form-group"></div>
+                    <div class="col-12 form-group mg-t-8">
+                        <button  type="submit" class="btn-fill-lg btn-gradient-yellow btn-hover-bluedark">Save</button>
+                        <button type="reset" class="btn-fill-lg bg-blue-dark btn-hover-yellow">Reset</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Add Class Area End Here -->
+    <footer class="footer-wrap-layout1">
+        <div class="copyright">© Copyrights <a href="#">akkhor</a> 2019. All rights reserved. Designed by <a href="#">PsdBosS</a></div>
+    </footer>
+</div>
+<script>
+    $(document).ready(function () {
+        setAcademicYearsToOptions()
+        setSubjectsOptions()
+    })
+    document.getElementById('classRegForm').addEventListener('submit', async function (e) {
+        e.preventDefault()
+        var classIsExsit = false
+        clsName = $('[name=cls-name]').val();
+        clsSubjects = $('[name=cls-subjects]').val();
+        clsAcademicYear = $('[name=cls-academic-year]').val();
+        // clsDesc = $('[name=cls-info]').val();
+        classRamaq = $('[name=cls-raqamka]').val();
+        console.log(clsSubjects,clsName,clsAcademicYear,classRamaq)
+        if (await checkIfThisClassIsExist(classRamaq, clsName, clsAcademicYear) == false) {
+
+            $.ajax({
+                method: 'POST',
+                url: '/api/classe-create/',
+                headers: { 'X-CSRFToken': getCookie('csrftoken'), 'Content-type': "application/json" },
+                data: JSON.stringify({
+                    'name': clsName,
+                    'subjects': clsSubjects,
+                    'studentsCount': 0,
+                    'academicYear': clsAcademicYear,
+                    'classRamaq': classRamaq
+                }),
+                success: function (classResp) {
+                    console.log(classResp)
+                    if (classResp.status == 'success') {
+                        document.getElementById('classRegForm').reset
+                        swal("Waad Diiwaangalisay Fasalkaan ", {
+                            icon: "success"
+                        });
+                        document.getElementById('classRegForm').reset()
+
+                        location.reload()
+                    }
+                }
+            })
+        } else {
+            swal("Fasalkaan Horay Ayaa Loo Diiwaangaliyay", {
+                icon: "warning"
+            });
+
+        }
+
+    })
+    
+
+    function setAcademicYearsToOptions() {
+        academicYearOption = document.getElementById('academicYearOption')
+        fetch('/api/academicYear-list/').then((resp) => resp.json()).then(function (academicYearResp) {
+            academicYearOption.innerHTML = ''
+            for (var i in academicYearResp) {
+                if (academicYearResp[i].isCurrentAcademicYear==true) {
+                    academicYearOption.innerHTML += `<option  value='${academicYearResp[i].id}'>${academicYearResp[i].fromDate.split('-')[0]}  --  ${academicYearResp[i].toDate.split('-')[0]}  &nbsp&nbsp HADDA  </option>`
+                }else{
+                    academicYearOption.innerHTML += `<option value='${academicYearResp[i].id}'>${academicYearResp[i].fromDate.split('-')[0]}  --  ${academicYearResp[i].toDate.split('-')[0]} </option>`
+           
+                }
+            }
+        })
+    }
+    function setSubjectsOptions() {
+        clsSubjectsOptions = document.getElementById('clsSubjectsOptions')
+        fetch('/api/subject-list/').then((resp) => resp.json()).then(function (subjectsResp) {
+            clsSubjectsOptions.innerHTML = ''
+            for (var i in subjectsResp) {
+                clsSubjectsOptions.innerHTML += `<option value='${subjectsResp[i].id}'>${subjectsResp[i].name}  </option>`
+            }
+        })
+    }
+
+    document.getElementById('add-subject').addEventListener('click', function () {
+        $('#addingSubjectModel').modal('show');
+    })
+    document.getElementById('subjectRegForm').addEventListener('submit', function (e) {
+        e.preventDefault()
+        subjectName = $('[name=subject-name]').val();
+        desc = $('[name=subject-info]').val();
+        $.ajax({
+            method: 'POST',
+            url: '/api/subject-create/',
+            headers: { 'X-CSRFToken': getCookie('csrftoken'), 'Content-type': "application/json" },
+            data: JSON.stringify({
+                'name': subjectName,
+                'desc': desc,
+            }),
+            success: function (subjectResp) {
+                if (subjectResp.status == 'success') {
+                    $('#addingSubjectModel').modal('hide');
+                    document.getElementById("subjectRegForm").reset();
+                    setSubjectsOptions()
+                }
+            }
+
+        })
+
+    })
+</script>
+{% endblock %}

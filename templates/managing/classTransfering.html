@@ -1,0 +1,190 @@
+{% extends 'examBase.html' %}
+{% load static %}
+
+{% block title %}Abdullahi Isse | SCHOOL {% endblock %}
+{% block user1 %}<h5 class="item-title">{{user.first_name}}</h5><span>Admin</span> {% endblock %}
+{% block user2 %}<h6 class="item-title">{{user}}</h6>{% endblock %}
+{% block content %}
+
+<div class="modal fade" id="large-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <form method="POST" id="classTransfering">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Wareejinta Ardada Fasalkaan</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="col-xl-6 col-lg-6 col-12 form-group">
+                            <label>Fasalka Hadda</label>
+                            <input style="background-color: white; border: 1px solid grey;" type="text"
+                                name="currentClass" required placeholder="Fasalka Hadda" disabled class="form-control">
+                        </div>
+
+                        <div class="col-xl-6 col-lg-6 col-12 form-group">
+                            <label>Fasalka Loo Warejinaayo </label>
+                            <select name="toTransferedClass" id="toTransferedClass" required class="select2">
+                                <option value="">Fasalka Loo Warejinaayo</option>
+
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="footer-btn bg-dark-low" data-dismiss="modal">Close</button>
+                    <button type="submit" class="footer-btn bg-linkedin">Save
+                        Changes</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="dashboard-content-one">
+    <!-- Breadcubs Area Start Here -->
+    <div class="breadcrumbs-area">
+        <ul>
+
+        </ul>
+    </div>
+    <!-- Breadcubs Area End Here -->
+    <!-- Teacher Table Area Start Here -->
+    <div class="card height-auto" style="border: 1px solid grey;">
+        <div class="card-body">
+            <div class="heading-layout1">
+                <div class="item-title">
+                    <h3>Wareejinta Fasalada</h3>
+                </div>
+
+            </div>
+
+            <div class="table-responsive">
+                <table class="table" id="classesDatatable">
+                    <thead>
+                        <tr>
+                            <th scope="col" width='10px'>#</th>
+                            <th scope="col">Magaca Fasalka</th>
+                            <th scope="col">Maadooyinka</th>
+                            <th scope="col">TiradaArdada</th>
+                            <th scope="col">Sanad-Dugsiyeedka</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- Teacher Table Area End Here -->
+    <!-- <footer class="footer-wrap-layout1">
+        <div class="copyright">© Copyrights <a href="#">akkhor</a> 2019. All rights reserved. Designed by <a href="#">PsdBosS</a></div>
+    </footer> -->
+</div>
+<script>
+    let classesDatatable = new DataTable('#classesDatatable', {});
+
+    $(document).ready(async function () {
+        await updateClassStd()
+        await getClasses()
+
+    })
+
+    async function getClasses() {
+
+        await fetch('/api/classe-list/').then((resp) => resp.json()).then(function (classeResp) {
+            for (var theClasse of classeResp) {
+                classesDatatable.row.add([
+                    theClasse.id,
+                    theClasse.name + ' -- ' + theClasse.classRamaq,
+                    theClasse.subjects,
+                    theClasse.studentsCount.toString(),
+                    '<strong>' + theClasse.sanadDugsiyedkaFrom.split('-')[0] + ' -  ' + theClasse.sanadDugsiyedkaTo.split('-')[0] + '</string>',
+                    `<i onclick='transferClasse(${theClasse.id})' class="fas fa-eye text-orange-blue"></i>&nbsp&nbsp`,
+
+                ]).draw()
+
+            }
+        })
+        // onclick="location.href="/examEntringStd/""'+theClasse.id+'"'/'"
+    }
+
+    async function transferClasse(classId) {
+        await setClaseeToOptions()
+        currentClass = await getClassInfo(classId)
+        status = 'success'
+        $('[name=currentClass]').val(currentClass.name + ' - ' + currentClass.classRamaq + '  { ' + currentClass.sanadDugsiyedkaFrom.split('-')[0] + '  ' + currentClass.sanadDugsiyedkaTo.split('-')[0] + '  } ');
+        $('#large-modal').modal('show');
+
+        document.getElementById('classTransfering').addEventListener('submit', function (e) {
+            e.preventDefault()
+            toTransferedClass = $('[name=toTransferedClass]').val()
+
+            fetch('/api/getStudentsForThisClass/' + classId + '/').then((resp) => resp.json()).then(async function (thisClassStudentsResp) {
+                for (var theStudent of thisClassStudentsResp.stdData) {
+                    $.ajax({
+                        method: 'POST',
+                        url: '/api/student-update/' + theStudent.id + '/',
+                        headers: { 'X-CSRFToken': getCookie('csrftoken'), 'Content-type': "application/json" },
+                        data: JSON.stringify({
+                            'stdClass': toTransferedClass
+                        }),
+                        success: function (theStudentRes) {
+
+                            status = theStudentRes.status
+                        }
+                    })
+                    await addClassToAccessed(theStudent.stdClass, theStudent.id)
+                }
+                if (status == 'success') {
+
+                    swal("Waad La Wareejiyay Ardada Fasalkaan", {
+                        icon: "success"
+                    });
+
+                } else {
+                    swal("Lama Wareejin Ardada Fasalkaan", {
+                        icon: "warning"
+                    });
+
+                }
+
+                // location.reload()
+
+
+            })
+
+
+        })
+
+        await updateClassStd()
+
+    }
+
+    function setClaseeToOptions() {
+        classeOption = document.getElementById('toTransferedClass')
+        fetch('/api/classe-list/').then((resp) => resp.json()).then(function (classeResp) {
+            classeOption.innerHTML = '<option selected disabled>Dhamaan Fasalada Sanadkaan</option>'
+            for (var i in classeResp) {
+                if (classeResp[i].isActive) {
+                    classeOption.innerHTML += `<option  value='${classeResp[i].id}'>${classeResp[i].name}  --  ${classeResp[i].classRamaq} { ${classeResp[i].sanadDugsiyedkaFrom.split('-')[0]} -- ${classeResp[i].sanadDugsiyedkaTo.split('-')[0]} } </option>`
+                }else{
+                    classeOption.innerHTML += `<option disabled  value='${classeResp[i].id}'>${classeResp[i].name}  --  ${classeResp[i].classRamaq} { ${classeResp[i].sanadDugsiyedkaFrom.split('-')[0]} -- ${classeResp[i].sanadDugsiyedkaTo.split('-')[0]} } </option>`
+                }
+                // if (classeResp[i].isActive==true) {
+                //     
+                // } else {
+                //     classeOption.innerHTML += `<option  value='${classeResp[i].id}'>${classeResp[i].name}  --  ${classeResp[i].classRamaq} { ${classeResp[i].sanadDugsiyedkaFrom.split('-')[0]} -- ${classeResp[i].sanadDugsiyedkaTo.split('-')[0]} } </option>`
+                
+                // }
+            }
+        })
+    }
+
+</script>
+{% endblock %}

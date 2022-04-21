@@ -1,0 +1,245 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Abdullahi Isse | SCHOOL {% endblock %}
+<style>
+    form input {
+        background-color: white;
+        border: 1px solid grey;
+    }
+</style>
+{% block user1 %}<h5 class="item-title">{{user.first_name}}</h5><span>Admin</span> {% endblock %}
+{% block user2 %}<h6 class="item-title">{{user}}</h6>{% endblock %}
+{% block content %}
+
+
+<div class="dashboard-content-one">
+    <!-- Breadcubs Area Start Here -->
+    <div class="breadcrumbs-area">
+        <h3>Sanad-Dugsiyeedka</h3>
+        <ul>
+            <li>
+                <a href="/school-admin/">Home</a>
+            </li>
+            <li>Academic Year Admit Form</li>
+        </ul>
+    </div>
+    <!-- Breadcubs Area End Here -->
+    <!-- All Subjects Area Start Here -->
+    <div class="row">
+        <div class="col-4-xxxl col-12">
+            <div class="card height-auto">
+                <div class="card-body">
+                    <div class="heading-layout1">
+                        <div class="item-title">
+                            <h3>Diiwangali Sanad Dugsiyeed</h3>
+
+                        </div>
+                        <div class="dropdown">
+                            <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown"
+                                aria-expanded="false">...</a>
+
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <a class="dropdown-item" href="#"><i class="fas fa-times text-orange-red"></i>Close</a>
+                                <a class="dropdown-item" href="#"><i
+                                        class="fas fa-cogs text-dark-pastel-green"></i>Edit</a>
+                                <a class="dropdown-item" href="#"><i
+                                        class="fas fa-redo-alt text-orange-peel"></i>Refresh</a>
+                            </div>
+                        </div>
+                    </div>
+                    <form id="academicYearRegForm" class="new-added-form">
+                        <div class="row">
+                            <div class="col-12-xxxl col-lg-6 col-12 form-group">
+                                <label>Ka Bilaawda</label>
+                                <input name="academic-year-start" required type="date" class="form-control"
+                                    placeholder="dd/mm/yyyy">
+                            </div>
+                            <div class="col-12-xxxl col-lg-6 col-12 form-group">
+                                <label>Ku Eg</label>
+                                <input name="academic-year-end" type="date" class="form-control"
+                                    placeholder="dd/mm/yyyy">
+                            </div>
+
+
+                            <div class="col-lg-12 col-12 form-group">
+                                <label>Faahfaahin</label>
+                                <textarea class="textarea form-control" name="academic-year-info" id="form-message"
+                                    cols="10" rows="9"></textarea>
+                            </div>
+                            <div class="col-12 form-group mg-t-8">
+                                <button type="submit"
+                                    class="btn-fill-lg btn-gradient-yellow btn-hover-bluedark">Save</button>
+                                <button type="reset" class="btn-fill-lg bg-blue-dark btn-hover-yellow">Reset</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-8-xxxl col-12">
+            <div class="card height-auto">
+                <div class="card-body">
+                    <div class="heading-layout1">
+                        <div class="item-title">
+                            <h3>Xogta Sanad-Dugsiyeedyada</h3>
+                        </div>
+                        <div class="dropdown">
+                            <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown"
+                                aria-expanded="false">...</a>
+
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <a class="dropdown-item" href="#"><i class="fas fa-times text-orange-red"></i>Close</a>
+                                <a class="dropdown-item" href="#"><i
+                                        class="fas fa-cogs text-dark-pastel-green"></i>Edit</a>
+                                <a class="dropdown-item" href="#"><i
+                                        class="fas fa-redo-alt text-orange-peel"></i>Refresh</a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <form class="mg-b-20">
+                        <div class="row gutters-8">
+                            <div class="col-lg-4 col-12 form-group">
+                                <input type="text" placeholder="Search by Exam ..." class="form-control">
+                            </div>
+                            <div class="col-lg-3 col-12 form-group">
+                                <input type="text" placeholder="Search by Subject ..." class="form-control">
+                            </div>
+                            <div class="col-lg-3 col-12 form-group">
+                                <input type="text" placeholder="dd/mm/yyyy" class="form-control">
+                            </div>
+                            <div class="col-lg-2 col-12 form-group">
+                                <button type="submit"
+                                    class="fw-btn-fill btn-gradient-yellow">SEARCH</button>
+                            </div>
+                        </div>
+                    </form> -->
+                    <div class="table-responsive">
+                        <table class="table" >
+                            <thead class="thead-dark" >
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Ka Bilaawda</th>
+                                    <th>Ku Eg</th>
+                                    <th>Faahfaahin</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="academicYearBody">
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- All Subjects Area End Here -->
+    <!-- <footer class="footer-wrap-layout1">
+        <div class="copyright">© Copyrights <a href="#">akkhor</a> 2019. All rights reserved. Designed by <a
+                href="#">PsdBosS</a></div>
+    </footer> -->
+</div>
+</div>
+
+<script>
+    // let academicYearDataTable = new DataTable('#datatable-academic-year', {});
+    var isExist
+    $(document).ready(async function () {
+        getAcademicYears()
+    })
+    document.getElementById('academicYearRegForm').addEventListener('submit',async function (e) {
+        e.preventDefault()
+        fromDate = $('[name=academic-year-start]').val();
+        toDate = $('[name=academic-year-end]').val();
+        desc = $('[name=academic-year-info]').val();
+        isExist=await checkIfExist(fromDate,toDate)
+        if (isExist==false) {
+            console.log('is not reg')
+            $.ajax({
+                method: 'POST',
+                url: '/api/academicYear-create/',
+                headers: { 'X-CSRFToken': getCookie('csrftoken'), 'Content-type': "application/json" },
+                data: JSON.stringify({
+                    'fromDate': fromDate,
+                    'toDate': toDate,
+                    'desc': desc,
+                }),
+                success: function (academicYearResp) {
+                    if (academicYearResp.status == 'success') {
+                        swal("Waad Diiwaangalisay Sanad Dugsiyeedkaan", {
+                            icon: "success"
+                        });
+                        document.getElementById("academicYearRegForm").reset();
+                        location.reload()
+                    }
+                }
+            })
+        } else {
+            swal("Horay Ayaa loo diiwaangaliyay Sanad-Dugsiyeedka", {
+                    icon: "warning"
+                });
+        }
+    })
+
+    async function getAcademicYears() {
+        academicYearBody = document.getElementById('academicYearBody')
+        await fetch('/api/academicYear-list/').then((resp) => resp.json()).then(function (academicYearResp) {
+             
+            for (var i in academicYearResp) {
+                if (academicYearResp[i].isCurrentAcademicYear) {
+                    academicYearBody.innerHTML+=`
+                    <tr style='background-color: #16a085 ;color:white'>
+                        <td>${academicYearResp[i].id}</td>
+                        <td>${academicYearResp[i].fromDate}</td>
+                        <td>${academicYearResp[i].toDate}</td>
+                        <td>${academicYearResp[i].desc}</td>
+                        <td>  <i style='border:1px solid white;padding:5px;border-radius:3px' onclick='activeThisAcademicYear(${academicYearResp[i].id})' class="fas fa-check text-dark-pastel-white"></i>  <i style='border:1px solid white;padding:5px;border-radius:3px' onclick='delAcademic(${academicYearResp[i].id})' style='padding:10px' class="fas fa-times text-orange-red"></i>  </td>
+                    </tr>
+                `
+                }else{
+                    academicYearBody.innerHTML+=`
+                    <tr>
+                        <td>${academicYearResp[i].id}</td>
+                        <td>${academicYearResp[i].fromDate}</td>
+                        <td>${academicYearResp[i].toDate}</td>
+                        <td>${academicYearResp[i].desc}</td>
+                        <td> <i style='border:1px solid grey;padding:5px;border-radius:3px' onclick='activeThisAcademicYear(${academicYearResp[i].id})' class="fas fa-check text-dark-pastel-black"></i>  <i style='border:1px solid grey;padding:5px;border-radius:3px' onclick='delAcademic(${academicYearResp[i].id})' style='padding:10px' class="fas fa-times text-orange-red"></i>  </td>
+                    </tr>
+                `
+                }
+             
+
+            }
+        })
+    }
+    // academicYearDataTable.row.add([
+    //                 `${academicYearResp[i].id}`,
+    //                 `${academicYearResp[i].fromDate}`,
+    //                 `${academicYearResp[i].toDate}`,
+    //                 `${academicYearResp[i].desc}`,
+    //                 `<i onclick='delAcademic(${academicYearResp[i].id})' style='padding:10px' class="fas fa-times text-orange-red"></i>
+    //                  <iclass="fas fa-pen text-dark-pastel-green"></i>       
+    //                 `,
+    //                 '',
+    //             ]).draw();
+    async function checkIfExist(startDate, toDate) {
+        isExist=true
+        
+        await $.ajax({
+                method: 'GET',
+                url: '/api/academicYear-list/',
+                success: function (academicYearResp) {
+                    for(var theYear of academicYearResp){
+                       
+                        if (theYear.fromDate.toString().split('-')[0]==startDate.toString().split('-')[0] && theYear.toDate.toString().split('-')[0]==toDate.toString().split('-')[0] ) {
+                            isExist=true
+                            break
+                        }  
+                    }
+                }
+            })
+        return isExist
+    }
+</script>
+<!-- <td> <i style="color:blue;"  class="feather icon-edit bg-c-blue">&nbsp&nbsp&nbsp</i><i style="color:red;" class="feather icon-trash del_lab"></td> -->
+{% endblock %}

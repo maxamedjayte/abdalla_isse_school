@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Abdullahi Isse | SCHOOL {% endblock %}
+{% block user1 %}<h5 class="item-title">{{user.first_name}}</h5> <span>Admin</span>{% endblock %}
+{% block user2 %}<h6 class="item-title">{{user}}</h6>{% endblock %}
+{% block content %}
+<div class="modal fade" id="updatingClassModal" id="large-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <form method="POST" id="updatingClassForm">
+        <div class="modal-dialog modal-lg" role="document">
+
+            <div class="modal-content">
+
+            </div>
+
+        </div>
+    </form>
+</div>
+<div class="dashboard-content-one">
+    <!-- Breadcubs Area Start Here -->
+    <div class="breadcrumbs-area">
+
+        <ul>
+            <li>
+                <a href="index.html">Home</a>
+            </li>
+            <li>Fasalada </li>
+        </ul>
+    </div>
+    <!-- Breadcubs Area End Here -->
+    <!-- Student Table Area Start Here -->
+    <div class="card height-auto">
+        <div class="card-body">
+            <div class="heading-layout1">
+                <div class="item-title">
+                    <h3>Fasalada Sanadkaan</h3>
+                </div>
+
+            </div>
+
+            <div class="table-responsive">
+                <table class="table" id="classeTable">
+                    <thead>
+                        <tr>
+                            <th scope="col" width='10px'>#</th>
+                            <th scope="col">Magaca Fasalka</th>
+                            <th scope="col">Maadooyinka</th>
+                            <th scope="col">TiradaArdada</th>
+                            <th scope="col">Sanad-Dugsiyeedka</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <br><br>
+    <div class="card height-auto">
+        <div class="card-body">
+            <div class="heading-layout1">
+                <div class="item-title">
+                    <h3>Fasaladii Hore</h3>
+                </div>
+
+            </div>
+
+            <div class="table-responsive">
+                <table class="table" id="classeTable2">
+                    <thead>
+                        <tr>
+                            <th scope="col" width='10px'>#</th>
+                            <th scope="col">Magaca Fasalka</th>
+                            <th scope="col">Maadooyinka</th>
+                            <th scope="col">TiradaArdada</th>
+                            <th scope="col">Sanad-Dugsiyeedka</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- Student Table Area End Here -->
+    <!-- <footer class="footer-wrap-layout1">
+        <div class="copyright">© Copyrights <a href="#">akkhor</a> 2019. All rights reserved. Designed by <a
+                href="#">PsdBosS</a></div>
+    </footer> -->
+</div>
+
+<script>
+    var classeTable
+    var classeTable2
+
+    $(document).ready(async function () {
+        classeTable = $('#classeTable').DataTable();
+        classeTable2 = $('#classeTable2').DataTable();
+        getClasses()
+
+    })
+    function getClasses() {
+        fetch('/api/classe-list/').then((resp) => resp.json()).then(function (classeResp) {
+
+            $.each(classeResp, function (i, theClasse) {
+                if (theClasse.isActive) {
+                    classeTable.row.add([
+                        theClasse.id.toString(),
+                        theClasse.name + ' -- ' + theClasse.classRamaq,
+                        theClasse.subjects,
+                        theClasse.studentsCount.toString(),
+                        `<strong>` + theClasse.sanadDugsiyedkaFrom.split('-')[0] + ' -- ' + theClasse.sanadDugsiyedkaTo.split('-')[0] + `</string>`,
+                        `<i onclick="updateTheClasse(${theClasse.id})" class="fas fa-edit text-dark-pastel-green"></i>&nbsp&nbsp&nbsp
+                        <i onclick="delClass(${theClasse.id})" class="fas fa-trash text-orange-red"></i>`
+                    ]).draw()
+                } else {
+                    console.log( theClasse.status)
+                   
+                    classeTable2.row.add([
+                        theClasse.id.toString(),
+                        theClasse.name + ' -- ' + theClasse.classRamaq,
+                        theClasse.subjects,
+                        theClasse.studentsCount.toString(),
+                        `<strong>` + theClasse.sanadDugsiyedkaFrom.split('-')[0] + ' -- ' + theClasse.sanadDugsiyedkaTo.split('-')[0] + `</string>`,
+                        theClasse.status==true? `  <button type="button" onclick='changeClassStatus(${theClasse.id},0)' class="btn-fill-lg btn-gradient-yellow btn-hover-bluedark">XIR</button>  `:` <button type="submit" onclick='changeClassStatus(${theClasse.id},1)' class="btn-fill-lg bg-blue-dark btn-hover-yellow">FUR</button>`
+                    ]).draw()
+                }
+
+            })
+        })
+    }
+    async function updateTheClasse(clsId) {
+        await fetch('/api/classe-detail/' + clsId + '/').then((resp) => resp.json()).then(function (thisClasseResp) {
+            document.getElementsByClassName('modal-content')[0].innerHTML = `
+                <div class="modal-header">
+                    <h5 class="modal-title">Fasalka ${thisClasseResp.name} - ${thisClasseResp.classRamaq} {${thisClasseResp.sanadDugsiyedkaFrom.split('-')[0]} -- ${thisClasseResp.sanadDugsiyedkaTo.split('-')[0]} }</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-12 form-group">
+                            <label>Magaca Fasalka</label>
+                            <input type="text" name="cls-name" value='${thisClasseResp.name}' placeholder="Soo Magaca Fasalka" class="form-control">
+                        </div>
+
+                        <div class="col-xl-12 col-lg-12 col-12 form-group">
+                            <label>Raqamka Fasalka </label>
+                            <select name="cls-raqamka" id="cls-raqamka" required class="form-control">
+                                <option disabled value="">Dooro Raqamka Fasalka</option>
+                                <option>A</option>
+                                <option>B</option>
+                                <option>C</option>
+                                <option>D</option>
+                                <option>E</option>
+                                <option>F</option>
+                                <option>J</option>
+                                <option>H</option>
+                            </select>
+                        </div>
+                        <div class="col-xl-8 col-lg-12 col-12 form-group">
+                            <label>Maadooyinka Fasalkaan</label>
+                            <select id="clsSubjectsOptions" class="form-control" aria-placeholder="" name="cls-subjects" required multiple >
+                            </select>
+                        </div>
+                        
+                        <div class="col-xl-12 col-lg-12 col-12 form-group">
+                            <label>Sanad Dugsiyeedka *</label>
+                            <select class="form-control" id="academicYearOption" name="cls-academic-year" required>
+
+                            </select>
+                        </div>
+                       
+
+
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="footer-btn bg-dark-low" data-dismiss="modal">Close</button>
+                    <button type="submit" class="footer-btn bg-linkedin">Save Changes</button>
+                </div>
+        `;
+            document.getElementById('cls-raqamka').innerHTML += ` <option selected>${thisClasseResp.classRamaq}</option>`
+            getSelectedSubjectsInfo(thisClasseResp)
+            setAcademicYearsToOptions()
+
+            async function setAcademicYearsToOptions() {
+                academicYearOption = document.getElementById('academicYearOption')
+                await fetch('/api/academicYear-list/').then((resp) => resp.json()).then(function (academicYearResp) {
+                    academicYearOption.innerHTML = ''
+                    for (var i in academicYearResp) {
+                        academicYearOption.innerHTML += `<option value='${academicYearResp[i].id}'>${academicYearResp[i].fromDate.split('-')[0]}  --  ${academicYearResp[i].toDate.split('-')[0]} </option>`
+                    }
+                })
+                document.getElementById('academicYearOption').innerHTML += ` <option value='${thisClasseResp.academicYear}' selected >${thisClasseResp.sanadDugsiyedkaFrom.split('-')[0]} -- ${thisClasseResp.sanadDugsiyedkaTo.split('-')[0]}</option>`
+            }
+        });
+        $('#updatingClassModal').modal('show');
+        document.getElementById('updatingClassForm').addEventListener('submit', async function (e) {
+            e.preventDefault()
+            clsName = $('[name=cls-name]').val();
+            clsSubjects = $('[name=cls-subjects]').val();
+            clsAcademicYear = $('[name=cls-academic-year]').val();
+            classRamaq = $('[name=cls-raqamka]').val();
+
+            $.ajax({
+                method: 'POST',
+                url: '/api/classe-update/' + clsId + '/',
+                headers: { 'X-CSRFToken': getCookie('csrftoken'), 'Content-type': "application/json" },
+                data: JSON.stringify({
+                    'name': clsName,
+                    'subjects': clsSubjects,
+                    'academicYear': clsAcademicYear,
+                    'classRamaq': classRamaq
+                }),
+                success: function (classResp) {
+                    if (classResp.status == 'success') {
+                        // document.getElementById('classRegForm').reset
+                        swal("Waad UpdateGreysay Fasalkaan ", {
+                            icon: "success"
+                        });
+
+                        location.reload()
+                    }
+                }
+            })
+        })
+    }
+    async function getSelectedSubjectsInfo(thisClasseResp) {
+
+        await fetch('/api/subject-list/').then((resp) => resp.json()).then(function (subjectsResp) {
+            for (var subj of subjectsResp) {
+                console.log(thisClasseResp.subjects.includes(subj.id))
+                if (thisClasseResp.subjects.includes(subj.id) == true) {
+                    console.log('yess')
+                    document.getElementById('clsSubjectsOptions').innerHTML += ` <option  value='${subj.id}' selected>${subj.name}</option>`
+                } else {
+                    document.getElementById('clsSubjectsOptions').innerHTML += ` <option value='${subj.id}'>${subj.name}</option>`
+                }
+            }
+        })
+
+    }
+
+</script>
+{% endblock %}

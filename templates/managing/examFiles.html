@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Abdullahi Isse | SCHOOL {% endblock %}
+<style>
+    form input {
+        background-color: white;
+        border: 1px solid grey;
+    }
+</style>
+{% block user1 %}<h5 class="item-title">{{user.first_name}}</h5><span>Admin</span> {% endblock %}
+{% block user2 %}<h6 class="item-title">{{user}}</h6>{% endblock %}
+{% block content %}
+
+<div class="modal fade" id="updatingSubjectModel" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <form id="updatingSubjectForm">
+
+
+                <div class="modal-header">
+                    <h4 class="modal-title">Wax Kaba Dalidda Maadada</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="updatingSubjectFormModalBody">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default waves-effect " data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary waves-effect waves-light ">Save
+                        changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="dashboard-content-one">
+    <!-- Breadcubs Area Start Here -->
+    <div class="breadcrumbs-area">
+        <h3>All Exam Files</h3>
+   
+    </div>
+    <!-- Breadcubs Area End Here -->
+    <!-- All Subjects Area Start Here -->
+    <div class="row">
+        
+        <div class="col-12-xxxl col-12">
+            <div class="card height-auto">
+                <div class="card-body">
+                    <div class="heading-layout1">
+                        <div class="item-title">
+                            <h3>Xogta Fileska</h3>
+                        </div>
+                        <div class="dropdown">
+                            <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown"
+                                aria-expanded="false">...</a>
+
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <a class="dropdown-item" href="#"><i class="fas fa-times text-orange-red"></i>Close</a>
+                                <a class="dropdown-item" href="#"><i
+                                        class="fas fa-cogs text-dark-pastel-green"></i>Edit</a>
+                                <a class="dropdown-item" href="#"><i
+                                        class="fas fa-redo-alt text-orange-peel"></i>Refresh</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table" id="datatable-examfiles">
+                            <thead>
+                                <tr>
+                                    <th width='20px'>ID</th>
+                                    <th>Fasalka </th>
+                                    <th>Userka</th>
+                                    <th>Fileka</th>
+                                    <th> </th>
+                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- All Subjects Area End Here -->
+    <!-- <footer class="footer-wrap-layout1">
+        <div class="copyright">© Copyrights <a href="#">akkhor</a> 2019. All rights reserved. Designed by <a
+                href="#">PsdBosS</a></div>
+    </footer> -->
+</div>
+</div>
+
+<script>
+    let datatableExamfiles= new DataTable('#datatable-examfiles', {
+        // options
+    });
+
+    $(document).ready(function () {
+        getFiles()
+    })
+ 
+
+    function getFiles() {
+        fetch('/api/examentringFiles-list/').then((resp) => resp.json()).then(function (examEntringResp) {
+            for (var examFile of examEntringResp) {
+                console.log(examFile)
+                datatableExamfiles.row.add([
+                    examFile.id.toString(),
+                    examFile.className + ' -- ' + examFile.classRaqam +'  '+ `<strong>` + examFile.classSanadDugsiyedkaFrom.split('-')[0] + ' -- ' + examFile.classSanadDugsiyedkaTo.split('-')[0] + `</string>`,
+                    examFile.fullname+' -- '+examFile.username,
+                    `<a href='${examFile.examEntringFile}'>${examFile.examEntringFile.split('/')[3]}</a>`,
+                    
+                    `  <i class="fas fa-pen text-dark-pastel-green" onclick='' ></i>&nbsp&nbsp&nbsp <i onclick='delFile(${examFile.id})' class="fas fa-trash text-orange-red"></i>`
+                ]).draw()
+            }
+        })
+    }
+
+   
+</script>
+<!-- <td> <i style="color:blue;"  class="feather icon-edit bg-c-blue">&nbsp&nbsp&nbsp</i><i style="color:red;" class="feather icon-trash del_lab"></td> -->
+{% endblock %}
