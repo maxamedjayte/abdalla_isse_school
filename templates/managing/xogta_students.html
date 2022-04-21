@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Abdullahi Isse | SCHOOL {% endblock %}
+{% block user1 %}<h5 class="item-title">{{user.first_name}}</h5><span>Admin</span> {% endblock %}
+{% block user2 %}<h6 class="item-title">{{user}}</h6>{% endblock %}
+{% block content %}
+
+<div class="dashboard-content-one">
+    <!-- Breadcubs Area Start Here -->
+    <div class="breadcrumbs-area">
+        <h3>Dhamaan Ardada </h3>
+        <ul>
+            <li>
+                <a href="index.html">Home</a>
+            </li>
+            <li>All Students</li>
+        </ul>
+    </div>
+    <!-- Breadcubs Area End Here -->
+    <!-- Student Table Area Start Here -->
+    <div class="card height-auto">
+        <div class="card-body">
+            <div class="heading-layout1">
+                <div class="item-title">
+                    <h3>All Students Data</h3>
+                </div>
+                <div class="dropdown">
+                    <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown"
+                        aria-expanded="false">...</a>
+
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a class="dropdown-item" href="#"><i
+                                class="fas fa-times text-orange-red"></i>Close</a>
+                        <a class="dropdown-item" href="#"><i
+                                class="fas fa-cogs text-dark-pastel-green"></i>Edit</a>
+                        <a class="dropdown-item" href="#"><i
+                                class="fas fa-redo-alt text-orange-peel"></i>Refresh</a>
+                    </div>
+                </div>
+            </div>
+            <form class="mg-b-20">
+                <div class="row gutters-8">
+                    <div class="col-3-xxxl col-xl-3 col-lg-3 col-12 form-group">
+                        <input type="text" placeholder="Search by Roll ..." class="form-control">
+                    </div>
+                    <div class="col-4-xxxl col-xl-4 col-lg-3 col-12 form-group">
+                        <input type="text" placeholder="Search by Name ..." class="form-control">
+                    </div>
+                    <div class="col-4-xxxl col-xl-3 col-lg-3 col-12 form-group">
+                        <input type="text" placeholder="Search by Class ..." class="form-control">
+                    </div>
+                    <div class="col-1-xxxl col-xl-2 col-lg-3 col-12 form-group">
+                        <button type="submit" class="fw-btn-fill btn-gradient-yellow">SEARCH</button>
+                    </div>
+                </div>
+            </form>
+            <div class="table-responsive">
+                <table class="table" id="studentTable">
+                    <thead>
+                        <tr>
+                            <th scope="col">#-ID Pass</th>
+                            <th scope="col">Magaca Ardayga</th>
+                            <th scope="col">Numberka</th>
+                            <th scope="col">Magaca Masuulka</th>
+                            <th scope="col">Numberka Masuulka</th>
+                            <th scope="col">Fasalka Ardayga</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- <tr>
+                            <td>#1</td>
+                            <td class="text-center"><img src="img/figure/student2.png" alt="student"></td>
+                            <td>Mark Willy</td>
+                            <td>Male</td>
+                            <td>2</td>
+                            <td>A</td>
+                            <td>Jack Sparrow </td>
+                            <td>TA-107 Newyork</td>
+                            <td>02/05/2001</td>
+                            <td>+ 123 9988568</td>
+                            <td>kazifahim93@gmail.com</td>
+                            <td>
+                                <div class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"
+                                        aria-expanded="false">
+                                        <span class="flaticon-more-button-of-three-dots"></span>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-right">
+                                        <a class="dropdown-item" href="#"><i
+                                                class="fas fa-times text-orange-red"></i>Close</a>
+                                        <a class="dropdown-item" href="#"><i
+                                                class="fas fa-cogs text-dark-pastel-green"></i>Edit</a>
+                                        <a class="dropdown-item" href="#"><i
+                                                class="fas fa-redo-alt text-orange-peel"></i>Refresh</a>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr> -->
+                  
+                   
+                       
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- Student Table Area End Here -->
+    <footer class="footer-wrap-layout1">
+        <div class="copyright">© Copyrights <a href="#">akkhor</a> 2019. All rights reserved. Designed by <a
+                href="#">PsdBosS</a></div>
+    </footer>
+</div>
+<script>
+    let studentTable = new DataTable('#studentTable', {
+        "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]]
+    });
+    $(document).ready(async function () {
+        getStudents()
+    })
+    function getStudents() {
+        fetch('/api/student-list/').then((resp) => resp.json()).then(function (studentRes) {
+            $.each(studentRes, function (i, theStudent) {
+                console.log(theStudent)
+                studentTable.row.add([
+                    `${theStudent.studentId.toString() } <strong>  ${theStudent.password.toString()} </strong>` , 
+                    theStudent.name,
+                    theStudent.number.toString(),
+                    theStudent.masuulkaName,
+                    theStudent.masuulkaNumber.toString(),
+                    theStudent.stdClassName + ' -- ' + theStudent.stdClassRaqam +' { '+theStudent.stdClassSanadDugsiyedkaFrom.split('-')[0]+'-- '+theStudent.stdClassSanadDugsiyedkaTo.split('-')[0]+' }',
+                  `
+                       <i class="fas fa-eye text-dark-pastel-green" onclick='location.href="/xogtaArdaygaan/${theStudent.id}/"' ></i>&nbsp&nbsp&nbsp <i onclick='delArdayga(${theStudent.user})' class="fas fa-trash text-orange-red"></i>
+                  `
+                ]).draw()
+            })
+        })
+    }
+</script>
+{% endblock %}

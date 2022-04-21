@@ -1,0 +1,274 @@
+{% extends 'examBase.html' %}
+{% load static %}
+
+{% block title %}Abdullahi Isse | SCHOOL {% endblock %}
+{% block user1 %}<h5 class="item-title">{{user.first_name}}</h5><span>Admin</span> {% endblock %}
+{% block user2 %}<h6 class="item-title">{{user}}</h6>{% endblock %}
+{% block content %}
+<style>
+    code {
+        font-weight: normal;
+        font-size: medium;
+    }
+    .loader {
+        
+        border: 16px solid #f3f3f3; /* Light grey */
+        border-top: 16px solid #3498db; /* Blue */
+        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+<input type="text" name="pk" hidden value="{{pk}}" id="">
+
+<div class="dashboard-content-one">
+    <!-- Breadcubs Area Start Here -->
+    <div class="breadcrumbs-area">
+
+    </div>
+    <!-- Breadcubs Area End Here -->
+
+    <div class="card height-auto">
+        <div class="card-body">
+           
+            <div id="stdDetail" class="single-info-details">
+               
+            </div>
+
+            <br>
+            <hr>
+            <br>
+            <div class="stdExam" id="stdExams">
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Teacher Table Area End Here -->
+
+</div>
+<script>
+    var stdId = $('[name=pk]').val()
+    var accessedClasses
+    var studentClassId
+    var schoolExams
+
+    stdExams = document.getElementById('stdExams')
+    var htmlData = ``
+    $(document).ready(async function () {
+        schoolExams = await getSchoolExams()
+
+        await getThisStdInfo(stdId)
+        htmlData = ``
+        var thisClassInfo
+        // console.log(accessedClasses)
+        document.getElementById('stdExams').classList.add( "loader");
+        thisClassInfo = await getClassInfo(studentClassId)
+        htmlData += `<div style="border:0.1px solid grey;border-radius:3px;" class="card" >
+                                <div class="card-header">
+                                    <h4  > <strong style="font-weight: bolder;">${thisClassInfo.name} -- ${thisClassInfo.classRamaq}</strong> </h4>
+                                </div>
+
+                                <div class="table-responsive dt-responsive">
+                                    <table class="table">
+                                        <thead  class="thead-dark">
+                                            <th style="font-weight: bold;font-size:larger" scope="col">MAADADA</th>
+                                   `
+
+        for (var exam of schoolExams) {
+            htmlData += `<th style="font-weight: bold" scope="col">${exam.examName}</th>`
+        }
+        htmlData += `<th style="font-weight: bold;font-size:larger" scope="col">Total</th>
+                                </thead>
+                                    <tbody>
+                                        `
+        for (var theSubject of thisClassInfo.subjects) {
+            var subj = await getSubjectInfo(theSubject)
+            htmlData += `<tr>
+                                <td style='font-weight:bolder;font-size:x-larger' >${subj.name}</td>`
+            thisAcademicYearExamEntring = await thisYearExamEntring(thisClassInfo.academicYear)
+            for (var exam of thisAcademicYearExamEntring) {
+                // console.log(exam.id)
+                //     console.log(theSubject)
+                //     console.log(stdId)
+
+                await fetch('/api/this-subject-mark/' + exam.id + '/' + theSubject + '/' + stdId + '/'+thisClassInfo.id+'/').then((resp) => resp.json()).then(async function (markRes) {
+                    
+                    if (markRes.created) {
+                        htmlData += `<td class="editable" data-id="${markRes.data.id}" data-type="1" >${markRes.data.marks}</td>`
+
+                    } else {
+                        htmlData += `<td class="editable" data-id="${exam.id},${theSubject},${stdId}" data-type="0" >${markRes.data.marks}</td>`
+                    }
+                })
+
+            }
+            htmlData += `</tr>`
+        }
+        htmlData += `   
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>`
+
+        document.getElementById('stdExams').classList.remove( "loader" );
+        stdExams.innerHTML = htmlData
+
+
+
+    })
+
+
+
+
+
+
+
+    async function getThisStdInfo(pk) {
+        await fetch('/api/student-detail/' + pk + '/').then((resp) => resp.json()).then(function (studentRes) {
+            // document.getElementById('stdName').innerHTML = studentRes.name
+            studentClassId = studentRes.stdClass
+            accessedClasses = studentRes.accessedClasses
+            // document.getElementById('stdName').innerHTML = studentRes.name
+            // document.getElementById('stdMasulka').innerHTML = studentRes.masuulkaName
+            // document.getElementById('stdMasulkaNumber').innerHTML = studentRes.masuulkaNumber
+            // document.getElementById('stdClass').innerHTML = studentRes.stdClassName + ' - ' + studentRes.stdClassRaqam
+            // document.getElementById('stdNum').innerHTML = studentRes.number
+            // document.getElementById('stdName2').innerHTML = studentRes.name
+            // document.getElementById('back-aroow').addEventListener('click', function () {
+            //     history.back()
+            // })
+            document.getElementById('stdDetail').innerHTML=`
+            <div class="item-img">
+                    <img width="220px" src="https://harris.uchicago.edu/files/inline-images/J.%20Vinegar%20profile.jpg" alt="student">
+                </div>
+                <div class="item-content">
+                    <div class="header-inline item-header">
+                        <h3 class="text-dark-medium font-medium">${studentRes.name}</h3>
+                        <div class="header-elements">
+                            <ul>
+                                <li><a href="#"><i class="far fa-edit"></i></a></li>
+                                <li><a href="#"><i class="fas fa-print"></i></a></li>
+                                <li><a href="#"><i class="fas fa-download"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p>Aliquam erat volutpat. Curabiene natis massa sedde lacu stiquen sodale
+                        word moun taiery.</p>
+                    <div class="info-table table-responsive">
+                        <table class="table text-nowrap">
+                            <tbody>
+                               
+                                <tr>
+                                    <td class="font-medium text-dark-medium">Numberka Ardayga:</td>
+                                    <td >${studentRes.number}</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium text-dark-medium">Magaca Masuulka:</td>
+                                    <td >${studentRes.masuulkaName}</td>
+                                    <td >${studentRes.masuulkaNumber}</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium text-dark-medium">Fasalka Hadda:</td>
+                                    <td >${studentRes.stdClassName} - ${studentRes.stdClassRaqam}</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium text-dark-medium">Fasalada Uu Dhigtay:</td>
+                                    <td >${studentRes.accessedClasses}</td>
+                                </tr>
+                            
+                               
+                               
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            
+            `
+        })
+    }
+
+
+
+    $(document).on("click", ".editable", function () {
+        var value = $(this).text();
+        var input = "<input type='number' maxlength='2' class='input-data' style='width:80px;border:1px solid red;' value='" + value + "' class='form-control' >";
+        $(this).html(input);
+        $(this).removeClass("editable");
+
+    });
+    $(document).on("blur", ".input-data", function () {
+        var value = $(this).val();
+        var td = $(this).parent("td");
+        $(this).remove();
+        td.html(value);
+        td.addClass("editable");
+        var type = td.data("type");
+        saveTheData(td.data("id"), value, type);
+        // updateTotalka();
+    });
+
+    $(document).on('keypress', ".input-data", async function (e) {
+        var key = e.which;
+        if (key == 13) {
+            var value = $(this).val();
+            var td = $(this).parent("td");
+            $(this).remove();
+            td.html(value);
+            td.addClass('editable');
+            var type = td.data("type");
+            saveTheData(td.data("id"), value, type);
+            // updateTotalka();
+        }
+    });
+    function saveTheData(id, value, type) {
+        console.log(type)
+        // console.log(id)
+        // console.log(value)
+        if (type == 0) {
+            $.ajax({
+                method: 'POST',
+                url: '/api/marks-create/',
+                headers: { 'X-CSRFToken': getCookie('csrftoken'), 'Content-type': "application/json" },
+                data: JSON.stringify({
+                    'theExamId': id.toString().split(',')[0],
+                    'studentId': id.toString().split(',')[2],
+                    'subjectId': id.toString().split(',')[1],
+                    'stdClasse': studentClassId,
+                    'marks': value,
+                }),
+                success: function (createdMarkResp) {
+                    location.reload()
+                }
+            });
+        } else {
+      
+            $.ajax({
+                method: 'POST',
+                url: '/api/marks-update/' + id + '/',
+                headers: { 'X-CSRFToken': getCookie('csrftoken'), 'Content-type': "application/json" },
+                data: JSON.stringify({
+                    'marks': value
+                }),
+                success: function (markUpdateResp) {
+                }
+            });
+
+
+        }
+
+
+
+    }
+
+
+
+</script>
+{% endblock %}

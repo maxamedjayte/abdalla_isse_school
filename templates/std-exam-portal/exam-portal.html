@@ -1,0 +1,41 @@
+{% extends 'examBase.html' %}
+{% load static %}
+{% block title %}MyPortal{% endblock %}
+
+{% block user1 %}<h5 class="item-title">{{user.first_name}}</h5><span>Student</span> {% endblock %}
+{% block user2 %}<h6 class="item-title">{{user}}</h6>{% endblock %}
+{% block content %}
+<!-- {% block back-aroow %}
+<button type="submit">
+    <span class="flaticon-arrow" aria-hidden="true"></span>
+</button>
+ {% endblock %} -->
+<input type="text" name="pk" hidden value="{{pk}}" id="">
+<div class="dashboard-content-one">
+    <!-- Breadcubs Area Start Here -->
+    <div class="breadcrumbs-area">
+
+    </div>
+    <div class="card height-auto">
+        <div style="background-color:  #2c3e50 ;width: 100%; text-align: center;color: white;padding-top: 10px;border-radius: 10px;"
+            class="card-title">
+            <h3 style='color: white;font-family: Arial, Helvetica, sans-serif;font-weight: bolder;'>RESULTIGA IMTAXAANKA ARDAYGAAN</h3>
+        </div>
+        <div class="card-body">
+            <div class="heading-layout1">
+
+                <div style="text-align: center;width: 100%;" class="item-title">
+                    <button type="button" onclick="location.href='/std/exam_result_tr/'" class="btn-fill-md radius-10 text-light bg-dark-pastel-green"><i class="fas fa-list mg-l-20"></i>&nbsp;&nbsp;&nbsp;&nbsp; Show as transaction</button>
+                    <button type="button" onclick="location.href='/std/exam_result_classe/'" class="btn-fill-lmd radius-10 text-light bg-true-v"><i class="fas fa-cloud mg-l-20"></i>&nbsp;&nbsp;&nbsp;&nbsp; Show as class-wise</button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+<script>
+
+</script>
+{% endblock %}

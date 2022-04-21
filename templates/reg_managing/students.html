@@ -1,0 +1,275 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Abdullahi Isse | SCHOOL {% endblock %}
+
+{% block user1 %}<h5 class="item-title">{{user.first_name}}</h5><span>Admin</span> {% endblock %}
+{% block user2 %}<h6 class="item-title">{{user}}</h6>{% endblock %}
+{% block content %}
+
+<div class="dashboard-content-one">
+    <!-- Breadcubs Area Start Here -->
+    <div class="breadcrumbs-area">
+        <h3>Students</h3>
+        <ul>
+            <li>
+                <a href="/school-admin/">Home</a>
+            </li>
+            <li>Student Admit Form</li>
+        </ul>
+    </div>
+    <!-- Breadcubs Area End Here -->
+    <!-- Admit Form Area Start Here -->
+    <div class="card height-auto">
+        <div class="card-body">
+            <div class="heading-layout1">
+                <div class="item-title">
+                    <h3>Add New Students</h3>
+                </div>
+                <div class="dropdown">
+                    <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown"
+                        aria-expanded="false">...</a>
+
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a class="dropdown-item" href="#"><i class="fas fa-times text-orange-red"></i>Close</a>
+                        <a class="dropdown-item" href="#"><i class="fas fa-cogs text-dark-pastel-green"></i>Edit</a>
+                        <a class="dropdown-item" href="#"><i class="fas fa-redo-alt text-orange-peel"></i>Refresh</a>
+                    </div>
+                </div>
+            </div>
+            <!-- enctype="multipart/form-data" -->
+            <form id="studentRegForm" class="new-added-form">
+                <div class="row">
+                    <div class="col-xl-6 col-lg-6 col-12 form-group">
+                        <label>Magaca Ardayga</label>
+                        <input type="text" name="std-name"
+                            required placeholder="Magaca Ardayga Oo Dhameestiran" class="form-control">
+                    </div>
+                    <div class="col-xl-3 col-lg-6 col-12 form-group">
+                        <label>ID-ga Ardayga</label>
+                        <input type="text" required name="std-id" placeholder="ID-Ga  Username" class="form-control">
+                    </div>
+                    <div class="col-xl-3 col-lg-6 col-12 form-group">
+                        <label>Password</label>
+                        <input type="text" required name="std-password" placeholder="Password Ardayga"
+                            class="form-control">
+                    </div>
+                    <div class="col-xl-3 col-lg-6 col-12 form-group">
+                        <label>Jisiga Ardayga</label>
+                        <select name="std-gender" required class="select2">
+                            <option disabled value=null>Please Select Gender *</option>
+                            <option value="wiil">Wiil</option>
+                            <option value="gabar">Gabar</option>
+                        </select>
+                    </div>
+                    <div class="col-xl-3 col-lg-6 col-12 form-group">
+                        <label>Numberka Ardayga</label>
+                        <input required type="text" maxlength="10" name="std-num" placeholder="Numberka Ardayga"
+                            class="form-control">
+                    </div>
+                    <div class="col-xl-6 col-lg-6 col-12 form-group">
+                        <label>Magaca Masuulka</label>
+                        <input type="text" name="std-masuulka" required placeholder="Masuulka Ardayga"
+                            class="form-control">
+                    </div>
+                    <div class="col-xl-3 col-lg-6 col-12 form-group">
+                        <label>Numberka Masuulka</label>
+                        <input required type="text" name="std-masuulka-num" maxlength="10" required class="form-control"
+                            placeholder="Numberka Masuulka">
+                    </div>
+
+
+                    <div class="col-xl-6 col-lg-6 col-12 form-group">
+                        <label>Fasalka Ardayga</label>
+                        <select id="classeOption" name="std-fasalka" required class="select2">
+                            <option value="">Dooro Fasalka*</option>
+
+
+                        </select>
+                    </div>
+                    <div class="col-xl-6 col-lg-6 col-12 form-group">
+                        <label>Door Sanad-Dugsiyeedka </label>
+                        <select id="academicYearOption" name="std-academic-year" required class="select2">
+                            <option value="">Dooro Sanad-Dugsiyeedka*</option>
+                        </select>
+                    </div>
+                    <div class="col-xl-6 col-lg-6 col-12 form-group">
+                        <label>Tariikhda Dhalashada</label>
+                        <input name="std-dob" type="text" placeholder="dd/mm/yyyy" class="form-control air-datepicker"
+                            data-position='bottom right'>
+                        <i class="far fa-calendar-alt"></i>
+                    </div>
+
+
+
+
+                    <div class="col-lg-6 col-12 form-group">
+                        <label>Faahfaahin</label>
+                        <textarea class="textarea form-control" name="message" id="form-message" cols="10"
+                            rows="9"></textarea>
+                    </div>
+                    <!-- <div class="col-lg-6 col-12 form-group mg-t-30">
+                        <label class="text-dark-medium">Sawirka Ardayga (150px X 150px)</label>
+                        <input type="file" type="file" name="std-image" class="form-control-file">
+                    </div> -->
+                    <div class="col-12 form-group mg-t-8">
+                        <button type="submit" class="btn-fill-lg btn-gradient-yellow btn-hover-bluedark">Save</button>
+                        <button type="reset" class="btn-fill-lg bg-blue-dark btn-hover-yellow">Reset</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admit Form Area End Here -->
+    <!-- <footer class="footer-wrap-layout1">
+        <div class="copyright">© Copyrights <a href="#">akkhor</a> 2019. All rights reserved. Designed by <a
+                href="#">PsdBosS</a></div>
+    </footer> -->
+</div>
+<script>
+    $(document).ready(async function () {
+        setClaseeToOptions()
+        setAcademicYearsToOptions()
+        $('[name=std-password]').val(generatePassword())
+
+
+
+    })
+    document.getElementById('studentRegForm').addEventListener('submit', async function (e) {
+        e.preventDefault()
+        username = $('[name=std-id]').val()
+        password = $('[name=std-password]').val()
+        stdName = $('[name=std-name]').val()
+        stdGender = $('[name=std-gender]').val()
+        stdNum = $('[name=std-num]').val()
+        stdMasulka = $('[name=std-masuulka]').val()
+        stdMasulkaNum = $('[name=std-masuulka-num]').val()
+        stdClass = $('[name=std-fasalka]').val();
+        stdARegistredAcademicYear = $('[name=std-academic-year]').val();
+        stdDob = $('[name=std-dob]').val();
+        password = $('[name=std-password]').val();
+        // stdImage = $('[name=std-image]').val()
+        // console.log('stdimage', stdImage)
+        if (await checkIfThisUserIsExist(username) == false) {
+            $.ajax({
+                method: 'POST',
+                url: '/api/user-create/',
+                headers: { 'X-CSRFToken': getCookie('csrftoken'), 'Content-type': "application/json" },
+                data: JSON.stringify({
+                    'username': username,
+                    'password': password,
+                    'first_name': stdName,
+                }),
+                success: function (userRes) {
+                    if (userRes.status == 'success') {
+                        $.ajax({
+                            method: 'POST',
+                            headers: { 'X-CSRFToken': getCookie('csrftoken'), 'Content-type': "application/json" },
+                            url: '/api/student-create/',
+                            data: JSON.stringify({
+                                'studentId': username,
+                                'user': userRes.data.id,
+                                'password': password,
+                                'gender': stdGender,
+                                'name': stdName,
+                                'masuulkaName': stdMasulka,
+                                'masuulkaNumber': stdMasulkaNum,
+                                'accessedClasses': [stdClass],
+                                'stdClass': stdClass,
+                                'number': stdNum,
+                                'stdARegistredAcademicYear': stdARegistredAcademicYear,
+                            }),
+                            success: function (studentRes) {
+                                console.log(studentRes)
+                                if (studentRes.status == 'success') {
+                                    swal("Waad Diiwaangalisay Ardaygaan ", {
+                                        icon: "success"
+                                    });
+                                    location.reload()
+                                    document.getElementById('studentRegForm').reset()
+                                } else {
+                                    $.ajax({
+                                        method: 'DELETE',
+                                        url: '/api/user-delete/' +  userRes.data.id + '/',
+                                        headers: { 'X-CSRFToken': getCookie('csrftoken'), 'Content-type': "application/json" },
+                                        success: function (stdDelResp) {
+                                            swal("Ardaygan Lama diiwaangalin", {
+                                                icon: "warning"
+                                            });
+                                            location.reload()
+                                            document.getElementById('studentRegForm').reset()
+                                        }
+                                    });
+                                }
+                            }
+                        })
+                    }
+                    $.ajax({
+                        method: 'GET',
+                        url: '/api/user-password-format/' + userRes.data.id + '/',
+                        success: function (passwordFormatresp) {
+
+                        }
+
+                    })
+                }
+            })
+        } else {
+            swal("Ardaygaan Horay Ayaa Loo Diiwaangaliyay", {
+                icon: "warning"
+            });
+
+        }
+    })
+
+    function setAcademicYearsToOptions() {
+        academicYearOption = document.getElementById('academicYearOption')
+        fetch('/api/academicYear-list/').then((resp) => resp.json()).then(function (academicYearResp) {
+            academicYearOption.innerHTML = '<option selected disabled >Dooro Sanad Dugsiyeedka</option>'
+            for (var i in academicYearResp) {
+                if (academicYearResp[i].isCurrentAcademicYear==true) {
+                    academicYearOption.innerHTML += `<option  value='${academicYearResp[i].id}'>${academicYearResp[i].fromDate.split('-')[0]}  --  ${academicYearResp[i].toDate.split('-')[0]}  &nbsp&nbsp HADDA  </option>`
+                }else{
+                    academicYearOption.innerHTML += `<option value='${academicYearResp[i].id}'>${academicYearResp[i].fromDate.split('-')[0]}  --  ${academicYearResp[i].toDate.split('-')[0]} </option>`
+           
+                }
+            }
+        })
+    }
+    function setClaseeToOptions() {
+        classeOption = document.getElementById('classeOption')
+        fetch('/api/classe-list/').then((resp) => resp.json()).then(function (classeResp) {
+            classeOption.innerHTML = '<option selected disabled>Dooro Fasalka </option>'
+            for (var i in classeResp) {
+                if (classeResp[i].status==true) {
+                    classeOption.innerHTML += `<option value='${classeResp[i].id}'>${classeResp[i].name}  --  ${classeResp[i].classRamaq} { ${classeResp[i].sanadDugsiyedkaFrom.split('-')[0]} -- ${classeResp[i].sanadDugsiyedkaTo.split('-')[0]} } </option>`       
+                }
+            }
+        })
+    }
+    async function checkIfThisUserIsExist(username) {
+        var isExist = false
+        await fetch('/api/checkingUserExist/' + username + '/').then((resp) => resp.json()).then(function (usersRes) {
+            if (usersRes.isExist == true) {
+                isExist = true
+            } else {
+                isExist = false
+            }
+
+        })
+        return isExist
+    }
+
+    function generatePassword() {
+        var chars = "0123456789abcdef012345678";
+        var passwordLength = 5;
+        var password = "";
+        for (var i = 0; i <= passwordLength; i++) {
+            var randomNumber = Math.floor(Math.random() * chars.length);
+            password += chars.substring(randomNumber, randomNumber + 1);
+        }
+        return password
+    }
+</script>
+{% endblock %}

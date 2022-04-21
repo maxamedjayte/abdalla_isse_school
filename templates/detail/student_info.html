@@ -1,0 +1,407 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Student Detail {% endblock %}
+
+{% block user1 %}<h5 class="item-title">{{user.first_name}}</h5><span>Admin</span> {% endblock %}
+{% block user2 %}<h6 class="item-title">{{user}}</h6>{% endblock %}
+{% block content %}
+<style>
+    code {
+        font-weight: normal;
+        font-size: medium;
+    }
+
+    .loader {
+
+        border: 16px solid #f3f3f3;
+        /* Light grey */
+        border-top: 16px solid #3498db;
+        /* Blue */
+        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+<input type="hidden" name="stdId" value="{{pk}}">
+<div class="dashboard-content-one">
+    <!-- Breadcubs Area Start Here -->
+    <div class="breadcrumbs-area">
+
+        <ul>
+
+        </ul>
+    </div>
+    <!-- Breadcubs Area End Here -->
+    <!-- Student Details Area Start Here -->
+    <div class="card height-auto">
+        <div class="card-body">
+            <form method="POST" class="new-added-form" id="stdUpdate">
+                <div class="heading-layout1">
+                    <div class="item-title">
+                        <h3>Xogta Ardaygaan</h3>
+                    </div>
+                    <div class="dropdown">
+                        <button type="submit" class="btn-fill-lg bg-blue-dark btn-hover-yellow">Save</button>
+
+                    </div>
+                </div>
+                <div id="student-info" class="single-info-details">
+
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="card height-auto">
+        <div class="card-body">
+            <h3>Dhamaan Imtixaanada Ardaygaan</h3>
+            <div class="stdExam loader" id="stdExams">
+
+            </div>
+        </div>
+    </div>
+    <!-- Student Details Area End Here -->
+    <!-- <footer class="footer-wrap-layout1">
+        <div class="copyright">© Copyrights <a href="#">akkhor</a> 2019. All rights reserved. Designed by <a
+                href="#">PsdBosS</a></div>
+    </footer> -->
+</div>
+<script>
+
+    var stdId = $('[name=stdId]').val()
+    var userId
+    var accessedClasses
+    var studentClassId
+    var schoolExams
+    var stdInfoResp2
+    var htmlData
+    $(document).ready(async function () {
+        document.getElementById('stdExams').classList.add("loader");
+        schoolExams = await getSchoolExams()
+        await $.ajax({
+            method: 'GET',
+            url: '/api/student-detail/' + stdId + '/',
+            success: function (stdInfoResp) {
+                stdInfoResp2 = stdInfoResp
+                accessedClasses = stdInfoResp.accessedClasses
+                studentClassId = stdInfoResp.stdClass
+                userId = stdInfoResp.user
+                // stdARegistredAcademicYear = $('[name=std-academic-year]').val();
+                getSelectedSubjectsInfo(accessedClasses)
+                document.getElementById('student-info').innerHTML = `
+                <div class="item-img">
+                    <img width='250px' src="https://ih1.redbubble.net/image.2697710196.2282/ssrco,slim_fit_t_shirt,mens,fafafa:ca443f4786,front,square_product,600x600.jpg" alt="student">
+                </div>
+                <div class="item-content">
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">Magaca Imtixaanka</label>
+                        <div class="col-sm-6">
+                            <input type="text" required name='std-name' value='${stdInfoResp.name}' class="form-control">
+                        </div>
+                        <div class="col-sm-4">
+                            <input type="text" required disabled name='std-number' value='${stdInfoResp.number}' class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">Student-ID</label>
+                        <div class="col-sm-6">
+                            <input name='std-username' required type="text"  value='${stdInfoResp.studentId}' class="form-control">
+                        </div>
+                        <div class="col-sm-4">
+                            <input name='std-password' required type="text"  value='${stdInfoResp.password}'  class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">Masuulka Ardayga</label>
+                        <div class="col-sm-6">
+                            <input name='std-masulka-name' required type="text"  value='${stdInfoResp.masuulkaName}' class="form-control">
+                        </div>
+                        <div class="col-sm-4">
+                            <input name='std-masuulka-num' required type="text"  value='${stdInfoResp.masuulkaNumber}' class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">Fasalka-Ardayga</label>
+                        <div class="col-sm-6">
+                            <select id="classeOption" name="std-class-now" class="form-control"   style='font-size:larger;height:40px' required>
+                               
+                            </select>
+                        </div>
+                        <div class="col-sm-4">
+                            <select class="form-control"  name="std-jinsiga" id="jinsiga" style='font-size:larger;height:40px' required>
+                                <option value="wiil" >Wiil </option>
+                                <option value="gabar">Gabar</option>
+        
+                            </select> 
+                        </div>  
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Fasalada Ardaygan Dhigtay</label>
+                        <div class="col-sm-9">
+                            <select aria-placeholder="Maadoyinka Fasalkaan" id='stdAccessedClasse' name="std-accessed-classe" required multiple class="select2">
+                                <option disabled >Dooro Fasalada Uu Dhigtay Ardaygaan</option>
+                            </select>
+                        </div>
+                       
+                        
+                      
+                    </div>
+                     
+                        
+                
+                   
+                </div>
+    
+    `
+
+                document.getElementById('jinsiga').innerHTML += '<option selected>' + stdInfoResp.gender + '</option>'
+                
+            }
+        })
+
+        await setClaseeToOptions()
+        document.getElementById('classeOption').innerHTML += '<option selected value=' + stdInfoResp2.stdClass + ' >' + stdInfoResp2.stdClassName + ' - ' + stdInfoResp2.stdClassRaqam + ' {' + stdInfoResp2.stdClassSanadDugsiyedkaFrom.split('-')[0] + ' ' + stdInfoResp2.stdClassSanadDugsiyedkaTo.split('-')[0] + ' }' + '</option>'
+
+        stdExams = document.getElementById('stdExams')
+        for (var currentAccessedClasse of accessedClasses) {
+            await getThisClassExam(await getClassInfo(currentAccessedClasse))
+        }
+    })
+    async function getThisClassExam(classInfo) {
+        studentClassId = classInfo.id
+        await fetch('/api/std-marks-list/' + stdId + '/' + classInfo.id + '/').then((resp) => resp.json()).then(async function (thisStdExam) {
+            if (thisStdExam.length != '0') {
+
+                htmlData += `<div class="card" style='font-size:large;' >
+                                <div class="card-header" style='background-color: #2c3e50;'>
+                                    <h4  > <strong style="font-weight: bolder;color:white">${classInfo.name} -- ${classInfo.classRamaq}</strong> </h4>
+                                </div>
+                                <div class="table-responsive dt-responsive">
+                                    <table class="table">
+                                        <thead  class="thead-dark">
+                                            <th style="font-weight: bold;font-size:x-larger" scope="col">MAADADA</th>
+                                   `
+                for (var exam of schoolExams) {
+                    htmlData += `<th style="font-weight: bold" scope="col">${exam.examName}</th>`
+                }
+                htmlData += `  <th style="font-weight: bold;font-size:larger" scope="col">Total</th>
+                                </thead>
+                                    <tbody>
+                                        `
+
+                for (var theSubject of classInfo.subjects) {
+                    var subj = await getSubjectInfo(theSubject)
+                    htmlData += `<tr>
+                                <td style='font-weight:bolder;font-size:x-larger' >${subj.name}</td>`
+                    thisAcademicYearExamEntring = await thisYearExamEntring(classInfo.academicYear)
+                    for (var exam of thisAcademicYearExamEntring) {
+
+                        await fetch('/api/this-subject-mark/' + exam.id + '/' + theSubject + '/' + stdId + '/' + classInfo.id + '/').then((resp) => resp.json()).then(async function (markRes) {
+                            if (markRes.created) {
+                                htmlData += `<td class="editable" data-id="${markRes.data.id}" data-type="1" >${markRes.data.marks}</td>`
+
+                            } else {
+                                htmlData += `<td class="editable" data-id="${exam.id},${theSubject},${stdId}" data-type="0" >${markRes.data.marks}</td>`
+                            }
+
+                        })
+
+                    }
+                    htmlData += `</tr>`
+                }
+                htmlData += `   
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>`
+
+                document.getElementById('stdExams').classList.remove("loader");
+                stdExams.innerHTML = htmlData
+            } else {
+
+            }
+        })
+    }
+    document.getElementById('stdUpdate').addEventListener('submit', function (e) {
+        e.preventDefault()
+        username = $('[name=std-username]').val()
+        password = $('[name=std-password]').val()
+        stdName = $('[name=std-name]').val()
+        stdNumber = $('[name=std-number]').val()
+        stdGender = $('[name=std-jinsiga]').val()
+        stdMasulka = $('[name=std-masuulka]').val()
+        stdMasulkaNum = $('[name=std-masuulka-num]').val()
+        stdClass = $('[name=std-class-now]').val();
+        stdDob = $('[name=std-dob]').val();
+        swal({
+            title: "Ma Hubtaa Inaad?",
+            text: "Badalayso Xogta Ardaygaan ",
+            icon: "info",
+            buttons: true,
+            dangerMode: true,
+        }).then((willDelete) => {
+            if (willDelete) {
+                $.ajax({
+                    method: 'POST',
+                    url: '/api/user-update/' + userId + '/',
+                    headers: { 'X-CSRFToken': getCookie('csrftoken'), 'Content-type': "application/json" },
+                    data: JSON.stringify({
+                        'username': username,
+                        'password': password,
+                        'first_name': stdName,
+                    }),
+                    success: function (userRes) {
+                        $.ajax({
+                            method: 'POST',
+                            url: '/api/student-update/' + stdId + '/',
+                            headers: { 'X-CSRFToken': getCookie('csrftoken'), 'Content-type': "application/json" },
+                            data: JSON.stringify({
+                                'studentId': username,
+                                'password': password,
+                                'gender': stdGender,
+                                'name': stdName,
+                                'masuulkaName': stdMasulka,
+                                'masuulkaNumber': stdMasulkaNum,
+                                // 'accessedClasses': [stdClass],
+                                'stdClass': stdClass,
+                                'number': stdNumber,
+                                // 'stdARegistredAcademicYear': stdARegistredAcademicYear,
+                            }),
+                            success: function (studentRes) {
+                                console.log(studentRes)
+                                // if (studentRes.status == 'success') {
+                                $.ajax({
+                                    method: 'GET',
+                                    url: '/api/user-password-format/' + userId + '/',
+                                    success: function (passwordFormatresp) {
+
+                                    }
+                                })
+                                swal("Waad La Save Greeyey Ardaygaan ", {
+                                    icon: "success"
+                                });
+                                document.getElementById('stdUpdate').reset
+                                // location.reload()
+                                // } else {
+
+                                // }
+                            }
+                        })
+                    }
+                })
+            }
+
+        })
+
+
+    })
+    async function setClaseeToOptions() {
+        classeOption = document.getElementById('classeOption')
+        await fetch('/api/classe-list/').then((resp) => resp.json()).then(function (classeResp) {
+            classeOption.innerHTML = '<option disabled>Dooro Fasalka </option>'
+            for (var i in classeResp) {
+                classeOption.innerHTML += `<option value='${classeResp[i].id}'>${classeResp[i].name}  --  ${classeResp[i].classRamaq} {  ${classeResp[i].sanadDugsiyedkaFrom.split('-')[0]}    ${classeResp[i].sanadDugsiyedkaTo.split('-')[0]}   }  </option>`
+            }
+        })
+    }
+
+
+    $(document).on("click", ".editable", function () {
+        var value = $(this).text();
+        var input = "<input type='number' maxlength='2' class='input-data' style='width:80px;border:1px solid red;' value='" + value + "' class='form-control' >";
+        $(this).html(input);
+        $(this).removeClass("editable");
+
+    });
+    $(document).on("blur", ".input-data", function () {
+        var value = $(this).val();
+        var td = $(this).parent("td");
+        $(this).remove();
+        td.html(value);
+        td.addClass("editable");
+        var type = td.data("type");
+        saveTheData(td.data("id"), value, type);
+        // updateTotalka();
+    });
+
+    $(document).on('keypress', ".input-data", async function (e) {
+        var key = e.which;
+        if (key == 13) {
+            var value = $(this).val();
+            var td = $(this).parent("td");
+            $(this).remove();
+            td.html(value);
+            td.addClass('editable');
+            var type = td.data("type");
+            saveTheData(td.data("id"), value, type);
+            // updateTotalka();
+        }
+    });
+    function saveTheData(id, value, type) {
+        console.log(type)
+        // console.log(id)
+        // console.log(value)
+        if (type == 0) {
+            $.ajax({
+                method: 'POST',
+                url: '/api/marks-create/',
+                headers: { 'X-CSRFToken': getCookie('csrftoken'), 'Content-type': "application/json" },
+                data: JSON.stringify({
+                    'theExamId': id.toString().split(',')[0],
+                    'studentId': id.toString().split(',')[2],
+                    'subjectId': id.toString().split(',')[1],
+                    'stdClasse': studentClassId,
+                    'marks': value,
+                }),
+                success: function (createdMarkResp) {
+                    location.reload()
+                }
+            });
+        } else {
+
+            $.ajax({
+                method: 'POST',
+                url: '/api/marks-update/' + id + '/',
+                headers: { 'X-CSRFToken': getCookie('csrftoken'), 'Content-type': "application/json" },
+                data: JSON.stringify({
+                    'marks': value
+                }),
+                success: function (markUpdateResp) {
+                }
+            });
+
+
+        }
+
+
+
+    }
+
+    async function getSelectedSubjectsInfo(stdAccessedClasse) {
+
+        await fetch('/api/classe-list/').then((resp) => resp.json()).then(function (allClasseResp) {
+            for (var cls of allClasseResp) {
+                
+                if (stdAccessedClasse.includes(cls.id) == true) {
+                    document.getElementById('stdAccessedClasse').innerHTML +=` <option  value='${cls.id}' selected>${cls.name}-${cls.classRamaq}</option>`
+                } else {
+                    document.getElementById('stdAccessedClasse').innerHTML +=` <option  value='${cls.id}' >${cls.name}-${cls.classRamaq}</option>`
+                }
+            }
+        })
+
+    }
+</script>
+
+{% endblock %}

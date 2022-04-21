@@ -1,0 +1,340 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Abdullahi Isse | SCHOOL {% endblock %}
+{% block user1 %}<h5 class="item-title">{{user.first_name}}</h5><span>Admin</span> {% endblock %}
+{% block user2 %}<h6 class="item-title">{{user}}</h6>{% endblock %}
+{% block content %}
+<div class="modal fade" id="updatingExamEntringModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <form id="updatingClassForm">
+
+
+                <div class="modal-header">
+                    <h4 class="modal-title">Wax Ka Badalida Galidda Imtixaanka</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="updatingExamEntringModalBody">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default waves-effect " data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary waves-effect waves-light ">Save
+                        changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="dashboard-content-one">
+    <!-- Breadcubs Area Start Here -->
+    <div class="breadcrumbs-area">
+        <h3>Noocyada-Imtixaanka Schoolka</h3>
+        <ul>
+            <li>
+                <a href="/school-admin/">Home</a>
+            </li>
+            <li>Exam Type Admit Form</li>
+        </ul>
+    </div>
+    <!-- Breadcubs Area End Here -->
+    <!-- All Subjects Area Start Here -->
+    <div class="row">
+        <div class="col-4-xxxl col-12">
+            <div class="card height-auto">
+                <div class="card-body">
+                    <div class="heading-layout1">
+                        <div class="item-title">
+                            <h3>Diiwangali Noocyada Imtixaanka</h3>
+                          
+                        </div>
+                        <div class="dropdown">
+                            <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown"
+                                aria-expanded="false">...</a>
+
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <a class="dropdown-item" href="#"><i class="fas fa-times text-orange-red"></i>Close</a>
+                                <a class="dropdown-item" href="#"><i
+                                        class="fas fa-cogs text-dark-pastel-green"></i>Edit</a>
+                                <a class="dropdown-item" href="#"><i
+                                        class="fas fa-redo-alt text-orange-peel"></i>Refresh</a>
+                            </div>
+                        </div>
+                    </div>
+                    <form id="imtixanEntringRegForm" class="new-added-form">
+                        <div class="row">
+                            <div class="col-xl-12 col-lg-6 col-12 form-group">
+                                <label>Nooca Imtixaanka</label>
+                                <select id="examTypesOption" name="noca-imtixanka"  required class="select2">
+                                    <option value="">Dooro Nooca Imtixaanka</option>
+        
+                                    
+                                </select>
+                            </div>
+                            <div class="col-xl-12 col-lg-6 col-12 form-group">
+                                <label> Dooro Sanad-Dugsiyeedka</label>
+                                <select style="background-color: white;border: 1px solid grey; color: black;" id="academicYearOption" name="exam-academic-year"   required class="select2">
+                                    <option value="">Dooro Sanad Dugsiyeedka</option>
+                                </select>
+                            </div>
+                            <div class="col-12-xxxl col-lg-6 col-12 form-group">
+                                <label>Taarikhda La galayo</label>
+                                <input name="date-entring" required type="date" class="form-control" placeholder="dd/mm/yyyy" >
+                            </div>
+                            <div class="col-lg-12 col-12 form-group">
+                                <label>Faahfaahin</label>
+                                <textarea class="textarea form-control" name="imtixaanka-info" id="form-message"
+                                    cols="10" rows="9"></textarea>
+                            </div>
+                            
+                            <div class="col-12 form-group mg-t-8">
+                                <button type="submit"
+                                    class="btn-fill-lg btn-gradient-yellow btn-hover-bluedark">Save</button>
+                                <button type="reset" class="btn-fill-lg bg-blue-dark btn-hover-yellow">Reset</button>
+                            </div>
+                        </div>
+                    </form>
+                </div> 
+            </div>
+        </div>
+        <div class="col-8-xxxl col-12">
+            <div class="card height-auto">
+                <div class="card-body">
+                    <div class="heading-layout1">
+                        <div class="item-title">
+                            <h3>Xogta Galida-Imtixaanadka</h3>
+                        </div>
+                    </div>
+                
+                    <div class="table-responsive">
+                        <table class="table" id="entringEntringDatatable">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Magaca Imtixaanka</th>
+                                    <th>Waqtiga Lagalayo</th>
+                                    <th>Sanad-Digsiyedka</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- All Subjects Area End Here -->
+    <!-- <footer class="footer-wrap-layout1">
+        <div class="copyright">© Copyrights <a href="#">akkhor</a> 2019. All rights reserved. Designed by <a
+                href="#">PsdBosS</a></div>
+    </footer> -->
+</div>
+</div>
+
+<script>
+    
+    let examEntringTable =new DataTable('#entringEntringDatatable', {});
+   
+
+    $(document).ready(function () {
+        getExamEntring();
+        setExamTypesToOptions()
+        setAcademicYearsToOptions()
+    })
+    document.getElementById('imtixanEntringRegForm').addEventListener('submit', async function (e) {
+        e.preventDefault()
+        examType = $('[name=noca-imtixanka]').val();
+        dateEntring = $('[name=date-entring]').val();
+        desc = $('[name=imtixaanka-info]').val();
+        academicYear = $('[name=exam-academic-year]').val();
+        console.log(examType,dateEntring,desc,academicYear)
+        if (await checingExamEntringExist(examType, academicYear) == false) {
+            await $.ajax({
+                method: 'POST',
+                url: '/api/examEntring-create/',
+                headers: { 'X-CSRFToken': getCookie('csrftoken'), 'Content-type': "application/json" },
+                data: JSON.stringify({
+                    'examType': examType,
+                    'dateEnrying': dateEntring,
+                    'desc': desc,
+                    'academicYear': academicYear,
+                }),
+                success: function (examEntringResp) {
+                    if (examEntringResp.status == 'success') {
+                        var thisClassSubjects
+                        swal("Waad Diiwaangalisay Imtixaanka", {
+                                icon: "success"
+                            });
+                            document.getElementById("imtixanEntringRegForm").reset();
+                            location.reload()
+                    } else {
+                        console.log('error')
+                    }
+                }
+            })
+        } else {
+            swal("Imtixaankan Horay Ayaa Loo Diiwaangaliyay", {
+                icon: "warning"
+            });
+        }
+    })
+    async function checingExamEntringExist(examType, clsAcademicYear) {
+        var isExist = false
+        await fetch('/api/checingExamEntringExist/' + examType + '/' + clsAcademicYear + '/').then((resp) => resp.json()).then(function (examTypeRes) {
+            if (examTypeRes.isExist == true) {
+                isExist = true
+            } else {
+                isExist = false
+            }
+
+        })
+        return isExist
+    }
+    async function setExamTypesToOptions() {
+        examTypesOption = document.getElementById('examTypesOption')
+        await fetch('/api/examType-list/').then((resp) => resp.json()).then(function (examTypeRes) {
+            examTypesOption.innerHTML = '<option selected disabled>Dooro Nooca Imtixaanka</option>'
+            for (var i in examTypeRes) {
+                examTypesOption.innerHTML += `<option  value='${examTypeRes[i].id}'>${examTypeRes[i].examName}  </option>`
+            }
+        })
+    }
+    async function setAcademicYearsToOptions() {
+        academicYearOption = document.getElementById('academicYearOption')
+        await fetch('/api/academicYear-list/').then((resp) => resp.json()).then(function (academicYearResp) {
+            academicYearOption.innerHTML = '<option selected disabled>Dooro Sanad Dugsiyeedka</option>'
+            for (var i in academicYearResp) {
+                if (academicYearResp[i].isCurrentAcademicYear==true) {
+                    academicYearOption.innerHTML += `<option  value='${academicYearResp[i].id}'>${academicYearResp[i].fromDate.split('-')[0]}  --  ${academicYearResp[i].toDate.split('-')[0]}  &nbsp&nbsp HADDA  </option>`
+                }else{
+                    academicYearOption.innerHTML += `<option value='${academicYearResp[i].id}'>${academicYearResp[i].fromDate.split('-')[0]}  --  ${academicYearResp[i].toDate.split('-')[0]} </option>`
+           
+                }
+             }
+        })
+    }
+    async function getExamEntring() {
+        await fetch('/api/examEntring-list/').then((resp) => resp.json()).then(function (examEntringResp) {
+            console.log(examEntringResp)
+            $.each(examEntringResp, function (i, theExamEntring) {
+                if (theExamEntring.isActive==true) {
+                    examEntringTable.row.add([
+                        theExamEntring.id.toString(),
+                        theExamEntring.examEntringName.toString(),
+                        theExamEntring.dateEnrying.toString(),
+                        theExamEntring.sanadDugsiyedkaFrom.split('-')[0].toString() + ' -- ' + theExamEntring.sanadDugsiyedkaTo.split(['-'])[0].toString(),
+                        `
+                        <i style="color:blue;"class="feather icon-eye "> <i style="color:blue;" onclick='examEntringUpdating(${theExamEntring.id})'  class="fas fa-edit ">&nbsp</i><i style="color:red;" onclick='delImt(${theExamEntring.id})' class="fas fa-trash">
+                        `
+                ]).draw()
+                }else{
+                    examEntringTable.row.add([
+                    theExamEntring.id.toString(),
+                    theExamEntring.examEntringName.toString(),
+                    theExamEntring.dateEnrying.toString(),
+                    theExamEntring.sanadDugsiyedkaFrom.split('-')[0].toString() + ' -- ' + theExamEntring.sanadDugsiyedkaTo.split(['-'])[0].toString(),
+                   `
+                   <button type="reset" class="btn-fill-lg bg-blue-dark btn-hover-red">DISABLED</button>
+                   `
+                ]).draw()
+                }
+                
+            })
+
+        })
+    }
+    async function examEntringUpdating(id) {
+        fetch('/api/examEntring-detail/' + id + '/').then((resp) => resp.json()).then(async function (thisExamEntringResp) {
+            console.log(thisExamEntringResp)
+            document.getElementById('updatingExamEntringModalBody').innerHTML = `
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Dooro Nooca Imtixaanka
+                </label>
+                <div class="col-sm-10">
+                    <select name="noca-imtixanka" id="examTypesOption"  class="form-control" required>
+                        
+
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Door Sanad-Dugsiyeedka </label>
+                <div class="col-sm-10">
+                    <select id="academicYearOption" name="exam-academic-year" class="form-control" required>
+                        <option value="opt1">Sanad Dugsiyeedka </option>
+
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Tarikhda La Galayo</label>
+                <div class="col-sm-10">
+                    <input type="date" required name="date-entring" value='${thisExamEntringResp.dateEnrying}' class="form-control">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Faahfaahin</label>
+                <div class="col-sm-10">
+                    <textarea rows="5" cols="5" name="imtixaanka-info" class="form-control"
+                        placeholder="Faahfaahinta Galida Imtixaanadka">${thisExamEntringResp.desc}</textarea>
+                </div>
+            </div>
+
+            `
+            await setAcademicYearsToOptions()
+            await setExamTypesToOptions()
+            document.getElementById('academicYearOption').innerHTML+='<option selected  value='+thisExamEntringResp.academicYear+'> '+thisExamEntringResp.sanadDugsiyedkaFrom+' -- '+thisExamEntringResp.sanadDugsiyedkaTo+'</option>'
+            document.getElementById('examTypesOption').innerHTML+='<option selected value='+thisExamEntringResp.examType+'> '+thisExamEntringResp.examEntringName+'</option>'
+        })
+        $('#updatingExamEntringModal').modal('show');
+        document.getElementById('updatingClassForm').addEventListener('submit',function (e) {
+            e.preventDefault()
+            examType = $('[name=noca-imtixanka]').val();
+            dateEntring = $('[name=date-entring]').val();
+            desc = $('[name=imtixaanka-info]').val();
+            academicYear = $('[name=exam-academic-year]').val();
+            $.ajax({
+                method: 'POST',
+                url: '/api/examEntring-update/'+id+'/',
+                headers: { 'X-CSRFToken': getCookie('csrftoken'), 'Content-type': "application/json" },
+                data: JSON.stringify({
+                    'examType': examType,
+                    'dateEnrying': dateEntring,
+                    'desc': desc,
+                    'academicYear': academicYear,
+                }),
+                success: function (examEntringResp) {
+                    if (examEntringResp.status == 'success') {
+                        var thisClassSubjects
+                        swal("Waad Save Garaysay Imtixaankan", {
+                                icon: "success"
+                            });
+                            document.getElementById("updatingClassForm").reset();
+                            location.reload()
+                     
+
+                    } else {
+                        console.log('error')
+                    }
+
+
+                }
+
+            })
+
+        })
+        
+
+    }
+    // `<td> <i style="color:blue;"   class="feather icon-eye ">&nbsp&nbsp <i style="color:blue;" onclick='editUpdating(${theExamEntring.id})'  class="feather icon-edit ">&nbsp&nbsp&nbsp</i><i style="color:red;" onclick='delImt(${theExamEntring.id})' class="feather icon-trash del_lab"></td>`
+</script>
+{% endblock %}
